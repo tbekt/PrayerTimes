@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prayer Times - Antwerp</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <h1>🕌 Prayer Times</h1>
+                <div class="location-selector">
+                    <form id="locationForm" method="get" class="location-form">
+                        <label for="country" class="location-label">📍 Select Location:</label>
+                        <select id="country" name="country" class="location-dropdown" required>
+                            <option value="">-- Select Country --</option>
+                            <option value="Belgium">Belgium</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="Germany">Germany</option>
+                            <option value="France">France</option>
+                            <option value="Netherlands">Netherlands</option>
+                            <option value="Sweden">Sweden</option>
+                            <option value="Spain">Spain</option>
+                            <option value="Italy">Italy</option>
+                            <option value="Turkey">Turkey</option>
+                            <option value="Egypt">Egypt</option>
+                            <option value="Saudi Arabia">Saudi Arabia</option>
+                            <option value="United Arab Emirates">United Arab Emirates</option>
+                            <option value="Pakistan">Pakistan</option>
+                            <option value="Malaysia">Malaysia</option>
+                            <option value="Indonesia">Indonesia</option>
+                            <option value="Canada">Canada</option>
+                            <option value="United States">United States</option>
+                            <option value="Australia">Australia</option>
+                        </select>
+
+                        <select id="city" name="city" class="location-dropdown" required>
+                            <option value="">-- Select City --</option>
+                        </select>
+
+                        <button type="submit" class="location-btn" style="flex-shrink: 0;">Go</button>
+                    </form>
+                </div>
+            </div>
+            <h2><%= location %></h2>
+            <div class="date-info">
+                <p class="gregorian">📅 <%= date %> <% if (hijriDate && hijriDate.hijri) { %>| 🌙 <%= hijriDate.hijri.day + ' ' + hijriDate.hijri.month.en + ' ' + hijriDate.hijri.year %><% } %></p>
+            </div>
+        </header>
+
+        <% if (error) { %>
+            <div class="error-message">
+                <p>⚠️ <%= error %></p>
+            </div>
+        <% } else { %>
+            <% if (nextPrayer) { %>
+                <div class="next-prayer">
+                    <h3>⏰ Next Prayer</h3>
+                    <div class="next-prayer-info">
+                        <span class="prayer-name"><%= nextPrayer.name %></span>
+                        <span class="prayer-time"><%= nextPrayer.time %></span>
+                    </div>
+                </div>
+            <% } %>
+
+            <div class="prayer-times-grid">
+                <div class="prayer-card">
+                    <div class="prayer-icon">🌙</div>
+                    <span class="prayer-name">Fajr</span>
+                    <span class="prayer-time"><%= prayerTimes.Fajr %></span>
+                    <div class="prayer-note">Imsak: <%= prayerTimes.Imsak %></div>
+                </div>
+
+                <div class="prayer-card">
+                    <div class="prayer-icon">🌅</div>
+                    <span class="prayer-name">Sunrise</span>
+                    <span class="prayer-time"><%= prayerTimes.Sunrise %></span>
+                    <div class="prayer-note">Shuruq</div>
+                </div>
+
+                <div class="prayer-card">
+                    <div class="prayer-icon">☀️</div>
+                    <span class="prayer-name">Dhuhr</span>
+                    <span class="prayer-time"><%= prayerTimes.Dhuhr %></span>
+                    <div class="prayer-note">Noon Prayer</div>
+                </div>
+
+                <div class="prayer-card">
+                    <div class="prayer-icon">📿</div>
+                    <span class="prayer-name">Asr</span>
+                    <span class="prayer-time"><%= prayerTimes.Asr %></span>
+                    <div class="prayer-note">Afternoon Prayer</div>
+                </div>
+
+                <div class="prayer-card">
+                    <div class="prayer-icon">🌄</div>
+                    <span class="prayer-name">Maghrib</span>
+                    <span class="prayer-time"><%= prayerTimes.Maghrib %></span>
+                    <div class="prayer-note">Sunset: <%= prayerTimes.Sunset %></div>
+                </div>
+
+                <div class="prayer-card">
+                    <div class="prayer-icon">✨</div>
+                    <span class="prayer-name">Isha</span>
+                    <span class="prayer-time"><%= prayerTimes.Isha %></span>
+                    <div class="prayer-note">Midnight: <%= prayerTimes.Midnight %></div>
+                </div>
+            </div>
+
+            <footer>
+                <p>🕋 <%= location %></p>
+                <p><small>Last updated: <%= new Date().toLocaleString() %></small></p>
+            </footer>
+        <% } %>
+    </div>
+
+    <script>
+        // City data organized by country
+        const locationData = {
+            'Belgium': ['Antwerp', 'Brussels', 'Ghent', 'Bruges', 'Liege', 'Charleroi', 'Mechelen'],
+            'United Kingdom': ['London', 'Manchester', 'Birmingham', 'Leeds', 'Glasgow', 'Liverpool', 'Bristol', 'Edinburgh'],
+            'Germany': ['Berlin', 'Munich', 'Hamburg', 'Cologne', 'Frankfurt', 'Dusseldorf', 'Dresden'],
+            'France': ['Paris', 'Marseille', 'Lyon', 'Toulouse', 'Nice', 'Strasbourg', 'Bordeaux'],
+            'Netherlands': ['Amsterdam', 'Rotterdam', 'Utrecht', 'The Hague', 'Eindhoven', 'Groningen'],
+            'Sweden': ['Stockholm', 'Gothenburg', 'Malmo', 'Uppsala', 'Sundsvall'],
+            'Spain': ['Madrid', 'Barcelona', 'Valencia', 'Seville', 'Bilbao', 'Cordoba'],
+            'Italy': ['Rome', 'Milan', 'Naples', 'Turin', 'Florence', 'Venice', 'Genoa'],
+            'Turkey': ['Istanbul', 'Ankara', 'Izmir', 'Bursa', 'Antalya', 'Konya'],
+            'Egypt': ['Cairo', 'Alexandria', 'Giza', 'Aswan', 'Luxor'],
+            'Saudi Arabia': ['Riyadh', 'Jeddah', 'Mecca', 'Medina', 'Dammam'],
+            'United Arab Emirates': ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'Ras Al Khaimah'],
+            'Pakistan': ['Karachi', 'Lahore', 'Islamabad', 'Peshawar', 'Quetta', 'Multan'],
+            'Malaysia': ['Kuala Lumpur', 'George Town', 'Ipoh', 'Kota Kinabalu', 'Kuching'],
+            'Indonesia': ['Jakarta', 'Surabaya', 'Medan', 'Semarang', 'Makassar', 'Palembang'],
+            'Canada': ['Toronto', 'Vancouver', 'Montreal', 'Calgary', 'Ottawa', 'Edmonton'],
+            'United States': ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Francisco'],
+            'Australia': ['Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide', 'Canberra']
+        };
+
+        const countrySelect = document.getElementById('country');
+        const citySelect = document.getElementById('city');
+        const locationForm = document.getElementById('locationForm');
+
+        // Populate cities when country is selected
+        countrySelect.addEventListener('change', function() {
+            const selectedCountry = this.value;
+            citySelect.innerHTML = '<option value="">-- Select City --</option>';
+            
+            if (selectedCountry && locationData[selectedCountry]) {
+                locationData[selectedCountry].forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    citySelect.appendChild(option);
+                });
+            }
+        });
+
+        // Auto-submit when city is selected
+        citySelect.addEventListener('change', function() {
+            if (this.value) {
+                locationForm.submit();
+            }
+        });
+
+        // Set default country on page load if location is available
+        window.addEventListener('load', function() {
+            const currentLocation = '<%= location %>';
+            if (currentLocation && currentLocation !== 'undefined') {
+                const parts = currentLocation.split(', ');
+                if (parts.length === 2) {
+                    const city = parts[0].trim();
+                    const country = parts[1].trim();
+                    
+                    // Find and set country
+                    for (let i = 0; i < countrySelect.options.length; i++) {
+                        if (countrySelect.options[i].value === country) {
+                            countrySelect.value = country;
+                            break;
+                        }
+                    }
+                    
+                    // Trigger change to populate cities
+                    countrySelect.dispatchEvent(new Event('change'));
+                    
+                    // Set city after cities are populated
+                    setTimeout(() => {
+                        for (let i = 0; i < citySelect.options.length; i++) {
+                            if (citySelect.options[i].value === city) {
+                                citySelect.value = city;
+                                break;
+                            }
+                        }
+                    }, 0);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
