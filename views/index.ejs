@@ -4,16 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prayer Times — <%= location %></title>
-    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['"Cormorant Garamond"', 'serif'],
+                        body:    ['"EB Garamond"',        'serif'],
+                        sans:    ['Montserrat',            'sans-serif'],
+                    },
+                    colors: {
+                        cream:   { DEFAULT: '#f5f0e8', dark: '#ede6d6' },
+                        parchment: '#e8dfc8',
+                        ink:     { DEFAULT: '#1c1a14', light: '#3d3a2e' },
+                        forest:  { DEFAULT: '#2c4a35', light: '#3a6147' },
+                        gold:    { DEFAULT: '#9a7c3a', light: '#c4a355', faint: '#f0e8d0' },
+                        rule:    '#c8bda0',
+                        muted:   '#7a7060',
+                    },
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:ital,wght@0,400;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Tailwind doesn't ship italic utilities in CDN play mode — add them here */
+        .italic { font-style: italic; }
+        /* thin top gold border on container */
+        .border-t-gold { border-top: 4px solid #9a7c3a; }
+        /* grid border collapse */
+        .prayer-grid .prayer-card { border-right: 1px solid #c8bda0; border-bottom: 1px solid #c8bda0; }
+        .prayer-grid .prayer-card:nth-child(3n)   { border-right: none; }
+        .prayer-grid .prayer-card:nth-child(4),
+        .prayer-grid .prayer-card:nth-child(5),
+        .prayer-grid .prayer-card:nth-child(6)    { border-bottom: none; }
+        @media (max-width: 640px) {
+            .prayer-grid { grid-template-columns: 1fr !important; }
+            .prayer-grid .prayer-card { border-right: none !important; border-bottom: 1px solid #c8bda0 !important; display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; }
+            .prayer-grid .prayer-card:last-child { border-bottom: none !important; }
+            .prayer-grid .prayer-card .prayer-time { font-size: 1.75rem; }
+        }
+        @media (min-width: 641px) and (max-width: 768px) {
+            .prayer-grid { grid-template-columns: repeat(2, 1fr) !important; }
+            .prayer-grid .prayer-card:nth-child(3n)   { border-right: 1px solid #c8bda0; }
+            .prayer-grid .prayer-card:nth-child(2n)   { border-right: none; }
+            .prayer-grid .prayer-card:nth-child(4),
+            .prayer-grid .prayer-card:nth-child(5),
+            .prayer-grid .prayer-card:nth-child(6)    { border-bottom: 1px solid #c8bda0; }
+            .prayer-grid .prayer-card:nth-child(5),
+            .prayer-grid .prayer-card:nth-child(6)    { border-bottom: none; }
+        }
+        select { -webkit-appearance: none; appearance: none; }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <div class="header-top">
-                <h1><span>Prayer Times</span>Salah</h1>
-                <div class="location-selector">
-                    <form id="locationForm" method="get" class="location-form">
-                        <select id="country" name="country" class="location-dropdown" required>
+<body class="min-h-screen bg-[#1a1814] px-3 py-8 sm:px-5 sm:py-10 font-body text-ink">
+
+<div class="max-w-4xl mx-auto bg-cream border border-rule border-t-gold shadow-2xl">
+
+    <!-- ── HEADER ── -->
+    <header class="px-5 pt-10 pb-8 sm:px-14 sm:pt-12 border-b border-rule bg-cream">
+
+        <!-- title + location selector row -->
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between sm:gap-8 mb-6">
+
+            <!-- title -->
+            <div class="flex-1">
+                <p class="font-sans text-[0.55rem] font-medium tracking-[0.35em] uppercase text-gold mb-2">Prayer Times</p>
+                <h1 class="font-display text-4xl sm:text-5xl font-light italic text-ink leading-none">Salah</h1>
+            </div>
+
+            <!-- location selector -->
+            <div class="flex-1 sm:max-w-sm">
+                <form id="locationForm" method="get" class="flex flex-wrap gap-2">
+                    <div class="relative flex-1 min-w-[120px]">
+                        <select id="country" name="country"
+                            class="w-full bg-cream-dark border border-rule text-ink-light font-sans text-xs tracking-wide px-3 py-2.5 pr-8 cursor-pointer focus:outline-none focus:border-gold">
                             <option value="">Country</option>
                             <option value="Belgium">Belgium</option>
                             <option value="United Kingdom">United Kingdom</option>
@@ -34,203 +101,265 @@
                             <option value="United States">United States</option>
                             <option value="Australia">Australia</option>
                         </select>
-                        <select id="city" name="city" class="location-dropdown" required>
+                        <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gold text-xs">▾</span>
+                    </div>
+                    <div class="relative flex-1 min-w-[120px]">
+                        <select id="city" name="city"
+                            class="w-full bg-cream-dark border border-rule text-ink-light font-sans text-xs tracking-wide px-3 py-2.5 pr-8 cursor-pointer focus:outline-none focus:border-gold">
                             <option value="">City</option>
                         </select>
-                        <button type="submit" class="location-btn">Go</button>
-                    </form>
-                </div>
+                        <span class="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-gold text-xs">▾</span>
+                    </div>
+                    <button type="submit"
+                        class="bg-forest hover:bg-forest-light text-cream font-sans font-medium text-[0.7rem] tracking-[0.15em] uppercase px-5 py-2.5 transition-colors flex-shrink-0 w-full sm:w-auto">
+                        Go
+                    </button>
+                </form>
             </div>
-
-            <h2><%= location %></h2>
-
-            <div class="date-strip">
-                <div class="date-item">
-                    <span class="date-label">Gregorian</span>
-                    <span class="date-value"><%= date %></span>
-                </div>
-                <% if (hijriDate && hijriDate.hijri) { %>
-                <div class="date-divider">✦</div>
-                <div class="date-item">
-                    <span class="date-label">Hijri</span>
-                    <span class="date-value hijri"><%= hijriDate.hijri.day + ' ' + hijriDate.hijri.month.en + ' ' + hijriDate.hijri.year + ' AH' %></span>
-                </div>
-                <% } %>
-            </div>
-        </header>
-
-        <div class="content-body">
-
-        <% if (error) { %>
-            <div class="error-message">
-                <p><%= error %></p>
-            </div>
-        <% } else { %>
-
-            <% if (nextPrayer) { %>
-                <div class="next-prayer">
-                    <div class="next-prayer-inner">
-                        <div class="next-prayer-left">
-                            <span class="next-label">Next Prayer</span>
-                            <span class="next-name"><%= nextPrayer.name %></span>
-                            <span class="next-time"><%= nextPrayer.time %></span>
-                        </div>
-                        <div class="countdown-wrap">
-                            <span class="countdown-label">Time remaining</span>
-                            <div class="countdown">
-                                <span class="cd-seg"><span class="cd-num" id="cd-h">00</span><span class="cd-unit">h</span></span>
-                                <span class="cd-sep">:</span>
-                                <span class="cd-seg"><span class="cd-num" id="cd-m">00</span><span class="cd-unit">m</span></span>
-                                <span class="cd-sep">:</span>
-                                <span class="cd-seg"><span class="cd-num" id="cd-s">00</span><span class="cd-unit">s</span></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            <% } %>
-
-            <div class="prayer-times-grid">
-                <div class="prayer-card">
-                    <div class="prayer-card-text">
-                        <span class="prayer-name">Fajr</span>
-                        <div class="prayer-note">Imsak: <%= prayerTimes.Imsak %></div>
-                    </div>
-                    <span class="prayer-time"><%= prayerTimes.Fajr %></span>
-                </div>
-                <div class="prayer-card">
-                    <div class="prayer-card-text">
-                        <span class="prayer-name">Sunrise</span>
-                        <div class="prayer-note">Shuruq</div>
-                    </div>
-                    <span class="prayer-time"><%= prayerTimes.Sunrise %></span>
-                </div>
-                <div class="prayer-card">
-                    <div class="prayer-card-text">
-                        <span class="prayer-name">Dhuhr</span>
-                        <div class="prayer-note">Noon Prayer</div>
-                    </div>
-                    <span class="prayer-time"><%= prayerTimes.Dhuhr %></span>
-                </div>
-                <div class="prayer-card">
-                    <div class="prayer-card-text">
-                        <span class="prayer-name">Asr</span>
-                        <div class="prayer-note">Afternoon Prayer</div>
-                    </div>
-                    <span class="prayer-time"><%= prayerTimes.Asr %></span>
-                </div>
-                <div class="prayer-card">
-                    <div class="prayer-card-text">
-                        <span class="prayer-name">Maghrib</span>
-                        <div class="prayer-note">Sunset: <%= prayerTimes.Sunset %></div>
-                    </div>
-                    <span class="prayer-time"><%= prayerTimes.Maghrib %></span>
-                </div>
-                <div class="prayer-card">
-                    <div class="prayer-card-text">
-                        <span class="prayer-name">Isha</span>
-                        <div class="prayer-note">Midnight: <%= prayerTimes.Midnight %></div>
-                    </div>
-                    <span class="prayer-time"><%= prayerTimes.Isha %></span>
-                </div>
-            </div>
-
-            <div class="ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
-
-        <% } %>
         </div>
 
-        <footer>
-            <p><%= location %></p>
-            <p><small>Updated <%= new Date().toLocaleString('en-GB', { dateStyle: 'long', timeStyle: 'short' }) %></small></p>
-        </footer>
-    </div>
+        <!-- location subtitle -->
+        <h2 class="font-sans text-[0.68rem] font-normal tracking-[0.25em] uppercase text-muted mt-1 mb-5"><%= location %></h2>
 
-    <script>
-        /* ── location selector ── */
-        const locationData = {
-            'Belgium': ['Antwerp','Brussels','Ghent','Bruges','Liege','Charleroi','Mechelen'],
-            'United Kingdom': ['London','Manchester','Birmingham','Leeds','Glasgow','Liverpool','Bristol','Edinburgh'],
-            'Germany': ['Berlin','Munich','Hamburg','Cologne','Frankfurt','Dusseldorf','Dresden'],
-            'France': ['Paris','Marseille','Lyon','Toulouse','Nice','Strasbourg','Bordeaux'],
-            'Netherlands': ['Amsterdam','Rotterdam','Utrecht','The Hague','Eindhoven','Groningen'],
-            'Sweden': ['Stockholm','Gothenburg','Malmo','Uppsala','Sundsvall'],
-            'Spain': ['Madrid','Barcelona','Valencia','Seville','Bilbao','Cordoba'],
-            'Italy': ['Rome','Milan','Naples','Turin','Florence','Venice','Genoa'],
-            'Turkey': ['Istanbul','Ankara','Izmir','Bursa','Antalya','Konya'],
-            'Egypt': ['Cairo','Alexandria','Giza','Aswan','Luxor'],
-            'Saudi Arabia': ['Riyadh','Jeddah','Mecca','Medina','Dammam'],
-            'United Arab Emirates': ['Dubai','Abu Dhabi','Sharjah','Ajman','Ras Al Khaimah'],
-            'Pakistan': ['Karachi','Lahore','Islamabad','Peshawar','Quetta','Multan'],
-            'Malaysia': ['Kuala Lumpur','George Town','Ipoh','Kota Kinabalu','Kuching'],
-            'Indonesia': ['Jakarta','Surabaya','Medan','Semarang','Makassar','Palembang'],
-            'Canada': ['Toronto','Vancouver','Montreal','Calgary','Ottawa','Edmonton'],
-            'United States': ['New York','Los Angeles','Chicago','Houston','Phoenix','Philadelphia','San Francisco'],
-            'Australia': ['Sydney','Melbourne','Brisbane','Perth','Adelaide','Canberra']
-        };
-
-        const countrySelect = document.getElementById('country');
-        const citySelect    = document.getElementById('city');
-        const locationForm  = document.getElementById('locationForm');
-
-        countrySelect.addEventListener('change', function() {
-            citySelect.innerHTML = '<option value="">City</option>';
-            if (this.value && locationData[this.value]) {
-                locationData[this.value].forEach(c => {
-                    const o = document.createElement('option');
-                    o.value = c; o.textContent = c;
-                    citySelect.appendChild(o);
-                });
-            }
-        });
-
-        citySelect.addEventListener('change', function() {
-            if (this.value) locationForm.submit();
-        });
-
-        window.addEventListener('load', function() {
-            const loc = '<%= location %>';
-            if (loc && loc !== 'undefined') {
-                const parts = loc.split(', ');
-                if (parts.length === 2) {
-                    const city = parts[0].trim(), country = parts[1].trim();
-                    for (let i = 0; i < countrySelect.options.length; i++) {
-                        if (countrySelect.options[i].value === country) { countrySelect.value = country; break; }
-                    }
-                    countrySelect.dispatchEvent(new Event('change'));
-                    setTimeout(() => {
-                        for (let i = 0; i < citySelect.options.length; i++) {
-                            if (citySelect.options[i].value === city) { citySelect.value = city; break; }
-                        }
-                    }, 0);
-                }
-            }
-        });
-
-        /* ── countdown ── */
-        <% if (nextPrayer) { %>
-        (function() {
-            const raw = '<%= nextPrayer.time %>';
-            const [tH, tM] = raw.split(':').map(Number);
-
-            function tick() {
-                const now = new Date();
-                const target = new Date(now);
-                target.setHours(tH, tM, 0, 0);
-                if (target <= now) target.setDate(target.getDate() + 1);
-
-                const diff = Math.max(0, Math.floor((target - now) / 1000));
-                const h = Math.floor(diff / 3600);
-                const m = Math.floor((diff % 3600) / 60);
-                const s = diff % 60;
-
-                document.getElementById('cd-h').textContent = String(h).padStart(2, '0');
-                document.getElementById('cd-m').textContent = String(m).padStart(2, '0');
-                document.getElementById('cd-s').textContent = String(s).padStart(2, '0');
-            }
-            tick();
-            setInterval(tick, 1000);
-        })();
+        <!-- date strip -->
+        <% if (!error) { %>
+        <div class="flex items-center justify-center gap-5 flex-wrap">
+            <div class="flex flex-col items-center gap-0.5">
+                <span class="font-sans text-[0.52rem] font-medium tracking-[0.25em] uppercase text-gold">Gregorian</span>
+                <span class="font-body italic text-muted text-sm"><%= date %></span>
+            </div>
+            <% if (hijriDate && hijriDate.hijri) { %>
+            <span class="text-rule text-xs">✦</span>
+            <div class="flex flex-col items-center gap-0.5">
+                <span class="font-sans text-[0.52rem] font-medium tracking-[0.25em] uppercase text-gold">Hijri</span>
+                <span class="font-body italic text-ink-light text-sm"><%= hijriDate.hijri.day + ' ' + hijriDate.hijri.month.en + ' ' + hijriDate.hijri.year + ' AH' %></span>
+            </div>
+            <% } %>
+        </div>
         <% } %>
-    </script>
+    </header>
+
+    <!-- ── CONTENT ── -->
+    <main class="px-5 py-10 sm:px-14">
+
+        <% if (error) { %>
+        <div class="border-l-4 border-red-800 bg-red-50 px-5 py-4 mb-8">
+            <p class="font-sans text-xs tracking-wide text-red-800"><%= error %></p>
+        </div>
+        <% } else { %>
+
+        <!-- next prayer + countdown -->
+        <% if (nextPrayer) { %>
+        <div class="relative bg-forest mb-10">
+            <span class="absolute -top-[9px] left-8 font-sans text-[0.58rem] font-medium tracking-[0.3em] uppercase text-gold-light bg-forest px-2.5">
+                Next Prayer
+            </span>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 px-7 py-6">
+
+                <!-- name + time -->
+                <div class="flex flex-col gap-1">
+                    <span class="font-display text-[1.9rem] font-light italic text-cream leading-none"><%= nextPrayer.name %></span>
+                    <span class="font-sans text-[0.6rem] tracking-[0.2em] uppercase text-gold-light/60 mt-1">at <%= nextPrayer.time %></span>
+                </div>
+
+                <!-- countdown -->
+                <div class="flex flex-col items-start sm:items-end gap-1">
+                    <span class="font-sans text-[0.52rem] font-medium tracking-[0.25em] uppercase text-gold-light/60">Time Remaining</span>
+                    <div class="flex items-baseline gap-0.5">
+                        <span class="flex items-baseline gap-0.5">
+                            <span id="cd-h" class="font-display text-[2.4rem] font-light text-gold-light leading-none min-w-[2ch] text-center">00</span>
+                            <span class="font-sans text-[0.55rem] tracking-[0.1em] uppercase text-gold-light/50 ml-0.5">h</span>
+                        </span>
+                        <span class="font-display text-2xl font-light text-gold-light/30 px-0.5 self-center">:</span>
+                        <span class="flex items-baseline gap-0.5">
+                            <span id="cd-m" class="font-display text-[2.4rem] font-light text-gold-light leading-none min-w-[2ch] text-center">00</span>
+                            <span class="font-sans text-[0.55rem] tracking-[0.1em] uppercase text-gold-light/50 ml-0.5">m</span>
+                        </span>
+                        <span class="font-display text-2xl font-light text-gold-light/30 px-0.5 self-center">:</span>
+                        <span class="flex items-baseline gap-0.5">
+                            <span id="cd-s" class="font-display text-[2.4rem] font-light text-gold-light leading-none min-w-[2ch] text-center">00</span>
+                            <span class="font-sans text-[0.55rem] tracking-[0.1em] uppercase text-gold-light/50 ml-0.5">s</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- prayer grid -->
+        <div class="prayer-grid grid grid-cols-3 border border-rule">
+
+            <% const icons = { Fajr: '🌙', Sunrise: '🌅', Dhuhr: '☀️', Asr: '📿', Maghrib: '🌄', Isha: '✨' }; %>
+            <% const notes = { Fajr: prayerTimes.Imsak ? 'Imsak: ' + prayerTimes.Imsak : '', Sunrise: 'Shuruq', Dhuhr: 'Noon Prayer', Asr: 'Afternoon Prayer', Maghrib: prayerTimes.Sunset ? 'Sunset: ' + prayerTimes.Sunset : '', Isha: 'Night Prayer' }; %>
+            <% const turkishNames = { Fajr: 'Sabah', Sunrise: 'Güneş', Dhuhr: 'Öğle', Asr: 'İkindi', Maghrib: 'Akşam', Isha: 'Yatsı' }; %>
+
+            <% ['Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'].forEach(function(name) { %>
+            <div class="prayer-card bg-cream hover:bg-gold-faint transition-colors duration-200 p-6 sm:p-7">
+                <!-- label row: name + turkish -->
+                <div class="mb-2 sm:mb-3">
+                    <span class="font-sans text-[0.6rem] font-medium tracking-[0.25em] uppercase text-muted"><%= name %></span>
+                    <span class="font-sans text-[0.55rem] tracking-[0.15em] uppercase text-rule ml-2">· <%= turkishNames[name] %></span>
+                </div>
+                <!-- time -->
+                <span class="prayer-time font-display text-[2.3rem] sm:text-[2.6rem] font-light text-ink leading-none block"><%= prayerTimes[name] %></span>
+                <!-- note -->
+                <% if (notes[name]) { %>
+                <p class="font-body italic text-muted text-[0.82rem] mt-2"><%= notes[name] %></p>
+                <% } %>
+            </div>
+            <% }); %>
+
+        </div>
+
+        <!-- ornament -->
+        <p class="text-center text-gold/50 tracking-[0.5em] text-sm mt-10">✦ &nbsp; ✦ &nbsp; ✦</p>
+
+        <% } %>
+    </main>
+
+    <!-- ── FOOTER ── -->
+    <footer class="text-center px-5 pb-8 pt-6 border-t border-rule">
+        <p class="font-sans text-[0.6rem] font-normal tracking-[0.2em] uppercase text-muted mb-1"><%= location %></p>
+        <p class="font-body italic text-rule text-[0.82rem]">Updated <%= new Date().toLocaleString('en-GB', { dateStyle: 'long', timeStyle: 'short' }) %></p>
+    </footer>
+
+</div><!-- /container -->
+
+<script>
+/* ── location selector ── */
+const locationData = {
+    'Belgium': [
+        'Antwerp','Brussels','Ghent','Bruges','Liege','Charleroi',
+        'Mechelen','Leuven','Namur','Mons','Aalst','Sint-Niklaas',
+        'Hasselt','Kortrijk','Genk','Tournai','Seraing','Roeselare',
+        'Mouscron','Verviers','Dendermonde','Turnhout','Beringen',
+        'Heist-op-den-Berg','Lokeren','Beveren','Ronse','Boom',
+        'Mortsel','Sint-Truiden'
+    ],
+    'United Kingdom': ['London','Manchester','Birmingham','Leeds','Glasgow','Liverpool','Bristol','Edinburgh'],
+    'Germany':        ['Berlin','Munich','Hamburg','Cologne','Frankfurt','Dusseldorf','Dresden'],
+    'France':         ['Paris','Marseille','Lyon','Toulouse','Nice','Strasbourg','Bordeaux'],
+    'Netherlands':    ['Amsterdam','Rotterdam','Utrecht','The Hague','Eindhoven','Groningen'],
+    'Sweden':         ['Stockholm','Gothenburg','Malmo','Uppsala','Sundsvall'],
+    'Spain':          ['Madrid','Barcelona','Valencia','Seville','Bilbao','Cordoba'],
+    'Italy':          ['Rome','Milan','Naples','Turin','Florence','Venice','Genoa'],
+    'Turkey':         ['Istanbul','Ankara','Izmir','Bursa','Antalya','Konya'],
+    'Egypt':          ['Cairo','Alexandria','Giza','Aswan','Luxor'],
+    'Saudi Arabia':   ['Riyadh','Jeddah','Mecca','Medina','Dammam'],
+    'United Arab Emirates': ['Dubai','Abu Dhabi','Sharjah','Ajman','Ras Al Khaimah'],
+    'Pakistan':       ['Karachi','Lahore','Islamabad','Peshawar','Quetta','Multan'],
+    'Malaysia':       ['Kuala Lumpur','George Town','Ipoh','Kota Kinabalu','Kuching'],
+    'Indonesia':      ['Jakarta','Surabaya','Medan','Semarang','Makassar','Palembang'],
+    'Canada':         ['Toronto','Vancouver','Montreal','Calgary','Ottawa','Edmonton'],
+    'United States':  ['New York','Los Angeles','Chicago','Houston','Phoenix','Philadelphia','San Francisco'],
+    'Australia':      ['Sydney','Melbourne','Brisbane','Perth','Adelaide','Canberra'],
+};
+
+const countrySelect = document.getElementById('country');
+const citySelect    = document.getElementById('city');
+const locationForm  = document.getElementById('locationForm');
+
+countrySelect.addEventListener('change', function() {
+    citySelect.innerHTML = '<option value="">City</option>';
+    (locationData[this.value] || []).forEach(c => {
+        const o = document.createElement('option');
+        o.value = c; o.textContent = c;
+        citySelect.appendChild(o);
+    });
+});
+
+citySelect.addEventListener('change', function() {
+    if (this.value) locationForm.submit();
+});
+
+window.addEventListener('load', function() {
+    const loc = '<%= location %>';
+    if (!loc || loc === 'undefined') return;
+    const parts = loc.split(', ');
+    if (parts.length !== 2) return;
+    const [city, country] = parts.map(s => s.trim());
+    for (const opt of countrySelect.options) {
+        if (opt.value === country) { countrySelect.value = country; break; }
+    }
+    countrySelect.dispatchEvent(new Event('change'));
+    setTimeout(() => {
+        for (const opt of citySelect.options) {
+            if (opt.value === city) { citySelect.value = city; break; }
+        }
+    }, 0);
+});
+
+/* ── countdown ──
+   All prayer times for today so we can jump to the next one when one passes.
+*/
+<% if (nextPrayer && prayerTimes) { %>
+(function() {
+    // Build a sorted list of today's prayer times as [name, totalMinutes]
+    const schedule = [
+        ['Fajr',    '<%= prayerTimes.Fajr %>'],
+        ['Sunrise', '<%= prayerTimes.Sunrise %>'],
+        ['Dhuhr',   '<%= prayerTimes.Dhuhr %>'],
+        ['Asr',     '<%= prayerTimes.Asr %>'],
+        ['Maghrib', '<%= prayerTimes.Maghrib %>'],
+        ['Isha',    '<%= prayerTimes.Isha %>'],
+    ].filter(([, t]) => t && t !== '--:--')
+     .map(([name, t]) => {
+        const [h, m] = t.split(':').map(Number);
+        return { name, minutes: h * 60 + m, time: t };
+     });
+
+    function findNext() {
+        const now  = new Date();
+        const nowM = now.getHours() * 60 + now.getMinutes();
+        return schedule.find(p => p.minutes > nowM) || { ...schedule[0], name: 'Fajr (Tomorrow)', isTomorrow: true };
+    }
+
+    const cdH = document.getElementById('cd-h');
+    const cdM = document.getElementById('cd-m');
+    const cdS = document.getElementById('cd-s');
+
+    // Update the banner name/time text dynamically when prayer switches
+    const nameEl = document.querySelector('.next-prayer-name');
+    const timeEl = document.querySelector('.next-prayer-time-label');
+
+    let current = findNext();
+
+    function tick() {
+        const now    = new Date();
+        const next   = findNext();
+
+        // If the prayer changed, update display labels
+        if (next.name !== current.name) {
+            current = next;
+            // Update visible prayer name + time label if the elements exist
+            const nameSpan = document.querySelector('[data-next-name]');
+            const timeSpan = document.querySelector('[data-next-time]');
+            if (nameSpan) nameSpan.textContent = current.name;
+            if (timeSpan) timeSpan.textContent = 'at ' + current.time;
+        }
+
+        // Calculate seconds until next prayer
+        let target;
+        if (current.isTomorrow) {
+            target = new Date(now);
+            target.setDate(target.getDate() + 1);
+            target.setHours(Math.floor(current.minutes / 60), current.minutes % 60, 0, 0);
+        } else {
+            target = new Date(now);
+            target.setHours(Math.floor(current.minutes / 60), current.minutes % 60, 0, 0);
+            if (target <= now) target.setDate(target.getDate() + 1); // safety
+        }
+
+        const diff = Math.max(0, Math.floor((target - now) / 1000));
+        cdH.textContent = String(Math.floor(diff / 3600)).padStart(2, '0');
+        cdM.textContent = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+        cdS.textContent = String(diff % 60).padStart(2, '0');
+    }
+
+    tick();
+    setInterval(tick, 1000);
+})();
+<% } %>
+</script>
 </body>
 </html>

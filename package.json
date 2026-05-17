@@ -4,11 +4,12 @@
   "description": "Islamic prayer times for Antwerp - Hanafi",
   "main": "index.ts",
   "scripts": {
-    "start": "node index.ts",
+    "start": "ts-node index.ts",
     "dev": "nodemon index.ts"
   },
   "dependencies": {
     "axios": "^1.16.0",
+    "cheerio": "^1.2.0",
     "dotenv": "^16.6.1",
     "ejs": "^3.1.9",
     "express": "^4.22.2",
@@ -16,6 +17,9 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
-    "nodemon": "^3.0.1"
+    "@types/node": "^25.8.0",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
   }
 }
